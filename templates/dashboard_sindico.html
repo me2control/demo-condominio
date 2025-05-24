@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard Síndico</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body style="--cor1: {{ config['cor1'] }}; --cor2: {{ config['cor2'] }}; --cor3: {{ config['cor3'] }};">
+  <div class="header">
+    <img src="{{ url_for('static', filename=config['logo']) }}" alt="Logo" class="logo">
+    <h1 class="cond-name">{{ config['nome_condominio'] }}</h1>
+  </div>
+
+  <div class="form-container">
+    <h2>Personalizar Sistema</h2>
+    <form method="POST" enctype="multipart/form-data">
+      <label>Nome do Condomínio:</label>
+      <input type="text" name="nome_condominio" value="{{ config['nome_condominio'] }}" required>
+
+      <label>Cor Primária:</label>
+      <input type="color" name="cor1" value="{{ config['cor1'] }}">
+
+      <label>Cor Secundária:</label>
+      <input type="color" name="cor2" value="{{ config['cor2'] }}">
+
+      <label>Cor de Destaque:</label>
+      <input type="color" name="cor3" value="{{ config['cor3'] }}">
+
+      <label>Logo (opcional):</label>
+      <input type="file" name="logo">
+
+      <button type="submit" class="btn">Salvar</button>
+    </form>
+    <a href="/logout" class="btn">Sair</a>
+  </div>
+
+  <div class="footer">Desenvolvido por ME2 System Control Digital</div>
+</body>
+</html>

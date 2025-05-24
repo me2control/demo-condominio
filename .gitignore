@@ -1,0 +1,20 @@
+
+---
+
+### ✅ `.gitignore`
+
+```gitignore
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+*.env
+instance/
+.vscode/
+*.sqlite3
+*.log
+*.DS_Store
+node_modules/
+*.zip
+

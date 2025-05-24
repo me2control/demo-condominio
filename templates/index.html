@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Cadastro de Visitante</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body style="--cor1: {{ config['cor1'] }}; --cor2: {{ config['cor2'] }}; --cor3: {{ config['cor3'] }};">
+  <div class="header">
+    <img src="{{ url_for('static', filename=config['logo']) }}" class="logo" alt="Logo">
+    <h1 class="cond-name">{{ config['nome_condominio'] }}</h1>
+  </div>
+
+  <div class="form-container">
+    <h2>Cadastro de Visitante</h2>
+    <form method="POST">
+      <label>Nome Completo:</label>
+      <input type="text" required>
+      <label>CPF:</label>
+      <input type="text" required>
+      <label>Placa do Veículo:</label>
+      <input type="text">
+      <label>Apartamento Visitado:</label>
+      <input type="text" required>
+      <label>Vaga que irá utilizar:</label>
+      <input type="text">
+      <button type="submit" class="btn">Enviar</button>
+    </form>
+  </div>
+
+  <div class="footer">Desenvolvido por ME2 System Control Digital</div>
+</body>
+</html>
