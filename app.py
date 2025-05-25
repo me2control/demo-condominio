@@ -62,7 +62,7 @@ def relatorios():
             with open(CSV_FILE, newline='', encoding='utf-8') as f:
                 reader = csv.reader(f)
                 registros = list(reader)
-        return render_template('dashboard-portaria.html', registros=registros)
+        return render_template('dashboard_portaria.html', registros=registros)
     return redirect(url_for('login'))
 
 @app.route('/logout')
