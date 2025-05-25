@@ -1,0 +1,2 @@
+echo "Nome,CPF,Placa,Apartamento,Vaga,DataHora" > dados.csv
+

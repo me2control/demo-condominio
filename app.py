@@ -1,91 +1,66 @@
-<<<<<<< HEAD
+from flask import Flask, render_template, request, redirect, url_for
+import csv
+from datetime import datetime
 import os
-import json
-from flask import Flask, render_template, request, redirect, session, url_for
 
 app = Flask(__name__)
-app.secret_key = "segredo"
-CONFIG_PATH = 'config.json'
-UPLOAD_FOLDER = 'static'
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
-def load_config():
-    with open(CONFIG_PATH, 'r') as f:
-        return json.load(f)
-
-def save_config(data):
-    with open(CONFIG_PATH, 'w') as f:
-        json.dump(data, f, indent=4)
-
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-@app.route("/")
+# Página inicial (formulário)
+@app.route('/')
 def index():
-    config = load_config()
-    return render_template("index.html", config=config)
+    return render_template('index.html')
 
-@app.route("/dashboard-sindico", methods=["GET", "POST"])
-def dashboard_sindico():
-    if session.get("tipo") != "sindico":
-        return redirect("/login")
-
-    config = load_config()
-
-    if request.method == "POST":
-        config["nome_condominio"] = request.form.get("nome_condominio")
-        config["cor1"] = request.form.get("cor1")
-        config["cor2"] = request.form.get("cor2")
-        config["cor3"] = request.form.get("cor3")
-
-        if 'logo' in request.files:
-            file = request.files['logo']
-            if file and allowed_file(file.filename):
-                filename = "logo_" + file.filename
-                filepath = os.path.join(UPLOAD_FOLDER, filename)
-                file.save(filepath)
-                config["logo"] = filename
-
-        save_config(config)
-
-    return render_template("dashboard_sindico.html", config=config)
-
-@app.route("/login", methods=["GET", "POST"])
+# Página de login
+@app.route('/login', methods=['GET', 'POST'])
 def login():
-    if request.method == "POST":
-        tipo = request.form.get("tipo")
-        if tipo in ["sindico", "portaria"]:
-            session["tipo"] = tipo
-            return redirect(f"/dashboard-{tipo}")
-    return render_template("login.html")
+    if request.method == 'POST':
+        usuario = request.form['usuario']
+        senha = request.form['senha']
+        if usuario == 'sindico' and senha == '123':
+            return redirect(url_for('dashboard_sindico'))
+        elif usuario == 'portaria' and senha == '123':
+            return redirect(url_for('dashboard_portaria'))
+        else:
+            return render_template('login.html', erro='Credenciais inválidas')
+    return render_template('login.html')
 
-@app.route("/logout")
-def logout():
-    session.clear()
-    return redirect("/")
-=======
-from flask import Flask, request, render_template, redirect, url_for
-import os
+# Painel do síndico
+@app.route('/dashboard-sindico')
+def dashboard_sindico():
+    return render_template('dashboard-sindico.html')
 
-app = Flask(__name__)
+# Painel da portaria
+@app.route('/dashboard-portaria')
+def dashboard_portaria():
+    return render_template('dashboard-portaria.html')
 
-@app.route("/", methods=["GET", "POST"])
-def index():
-    if request.method == "POST":
-        nome = request.form["nome"]
-        cpf = request.form["cpf"]
-        placa = request.form["placa"]
-        apartamento = request.form["apartamento"]
-        vaga = request.form["vaga"]
-        print(f"Novo visitante: {nome}, CPF: {cpf}, Placa: {placa}, Ap: {apartamento}, Vaga: {vaga}")
-        return redirect(url_for("obrigado"))
-    return render_template("formulario.html")
+# Página de relatórios (acessada pelo síndico)
+@app.route('/relatorios')
+def relatorios():
+    dados = []
+    if os.path.exists('dados.csv'):
+        with open('dados.csv', newline='', encoding='utf-8') as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                dados.append(row)
+    return render_template('relatorios.html', dados=dados)
 
-@app.route("/obrigado")
-def obrigado():
-    return render_template("obrigado.html")
+# Rota para receber os dados do formulário e salvar no CSV
+@app.route('/enviar', methods=['POST'])
+def enviar():
+    nome = request.form['nome']
+    cpf = request.form['cpf']
+    placa = request.form['placa']
+    apartamento = request.form['apartamento']
+    vaga = request.form['vaga']
+    datahora = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
->>>>>>> a130d970290d736251c943fedfc5029c06f2c163
+    with open('dados.csv', mode='a', newline='', encoding='utf-8') as file:
+        writer = csv.writer(file)
+        writer.writerow([nome, cpf, placa, apartamento, vaga, datahora])
+
+    return redirect(url_for('index'))
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
