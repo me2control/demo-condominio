@@ -52,7 +52,7 @@ def autenticar():
 def dashboard_sindico():
     if session.get('usuario') == 'sindico':
         return render_template('dashboard_sindico.html')
-    return redirect(url_for('login'))
+   
 
 @app.route('/dashboard-portaria')
 def relatorios():
@@ -63,7 +63,7 @@ def relatorios():
                 reader = csv.reader(f)
                 registros = list(reader)
         return render_template('dashboard_portaria.html')
-    return redirect(url_for('login'))
+
 
 @app.route('/logout')
 def logout():
