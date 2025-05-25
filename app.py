@@ -28,7 +28,7 @@ def cadastrar():
             writer = csv.writer(f)
             writer.writerow([nome, documento, apartamento, motivo])
 
-        return render_template('obrigado.html', nome=nome)
+        return render_template('cadastro_sucesso.html', nome=nome)
 
 @app.route('/login')
 def login():
