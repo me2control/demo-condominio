@@ -41,17 +41,17 @@ def autenticar():
 
     if usuario == 'sindico' and senha == 'sindico123':
         session['usuario'] = 'sindico'
-        return redirect(url_for('dashboard_sindico'))
+        return redirect(url_for('dashboard_sindico.html'))
     elif usuario == 'portaria' and senha == 'portaria123':
         session['usuario'] = 'portaria'
-        return redirect(url_for('dashboard_portaria'))
+        return redirect(url_for('dashboard_portaria.html'))
     else:
         return render_template('login.html', erro='Usuário ou senha inválidos.')
 
 @app.route('/dashboard-sindico')
 def dashboard_sindico():
     if session.get('usuario') == 'sindico':
-        return render_template('dashboard-sindico.html')
+        return render_template('dashboard_sindico.html')
     return redirect(url_for('login'))
 
 @app.route('/dashboard-portaria')
@@ -62,7 +62,7 @@ def relatorios():
             with open(CSV_FILE, newline='', encoding='utf-8') as f:
                 reader = csv.reader(f)
                 registros = list(reader)
-        return render_template('registros', registros=registros)
+        return render_template('dashboard_portaria.html')
     return redirect(url_for('login'))
 
 @app.route('/logout')
