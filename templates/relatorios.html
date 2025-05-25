@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Relatórios - Síndico</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+</head>
+<body class="bg-light">
+
+    <nav class="navbar navbar-dark bg-primary mb-4">
+        <div class="container-fluid">
+            <span class="navbar-brand mb-0 h1">Relatórios de Visitantes</span>
+        </div>
+    </nav>
+
+    <div class="container mb-5">
+        <div class="card shadow p-4">
+            <h5 class="card-title mb-4"><i class="bi bi-table"></i> Visitantes Registrados</h5>
+
+            <!-- Aqui você poderá futuramente carregar dados dinamicamente -->
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>CPF</th>
+                        <th>Placa do Veículo</th>
+                        <th>Apartamento</th>
+                        <th>Vaga</th>
+                        <th>Data/Hora</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>João da Silva</td>
+                        <td>123.456.789-00</td>
+                        <td>ABC1D23</td>
+                        <td>101</td>
+                        <td>12</td>
+                        <td>24/05/2025 14:32</td>
+                    </tr>
+                    <tr>
+                        <td>Maria Souza</td>
+                        <td>987.654.321-00</td>
+                        <td>XYZ9F87</td>
+                        <td>302</td>
+                        <td>15</td>
+                        <td>24/05/2025 15:10</td>
+                    </tr>
+                    <!-- Mais linhas podem ser adicionadas -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <footer class="bg-dark text-white text-center py-3 fixed-bottom">
+        Desenvolvido por ME2 System Control Digital
+    </footer>
+
+</body>
+</html>
+
