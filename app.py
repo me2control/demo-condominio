@@ -1,116 +1,78 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+# -*- coding: utf-8 -*-
+from flask import Flask, render_template, request, redirect, url_for, flash
 import csv
 import os
 
 app = Flask(__name__)
-app.secret_key = 'sb'\x9f\x1a\xdc\x0b\xeb\xe4\xf1\xf3\x82\x12\x17\x9c\xaf\xdb\x06\xc9\x8d\xbc\x14\xca\x81\xd3\xb4\xfd''  # Troque para algo seguro em produção
+app.secret_key = 'me2-secret-key'  # Necessário para usar flash messages
 
-# Dados básicos para personalização (exemplo)
-COND_NOME = "Demo Condomínio"
-COND_LOGO = "/static/logo.png"
-COND_CORES = {
-    "cor1": "#1E88E5",  # azul primário
-    "cor2": "#1565C0",
-    "cor3": "#90CAF9"
-}
-
-# Usuários cadastrados (exemplo, ideal salvar em banco ou arquivo seguro)
-USUARIOS = {
-    "sindico": "senha123",
-    "portaria": "senha123"
-}
-
-DADOS_CSV = 'dados.csv'
-
-# Cria CSV com cabeçalho se não existir
-if not os.path.exists(DADOS_CSV):
-    with open(DADOS_CSV, mode='w', newline='', encoding='utf-8') as f:
-        writer = csv.writer(f)
-        writer.writerow(['Nome', 'CPF', 'Placa', 'Apartamento', 'Vaga'])
-
+CAMINHO_ARQUIVO = 'dados.csv'
 
 @app.route('/')
 def index():
-    return render_template('index.html', nome=COND_NOME, logo=COND_LOGO, cores=COND_CORES)
-
+    return render_template('index.html')
 
 @app.route('/cadastro', methods=['POST'])
 def cadastro():
-    nome = request.form.get('nome')
-    cpf = request.form.get('cpf')
-    placa = request.form.get('placa')
-    apartamento = request.form.get('apartamento')
-    vaga = request.form.get('vaga')
+    if request.method == 'POST':
+        nome = request.form['nome']
+        cpf = request.form['cpf']
+        placa = request.form['placa']
+        apartamento = request.form['apartamento']
+        vaga = request.form['vaga']
+        motivo = request.form['motivo']
 
-    # Salva dados no CSV
-    with open(DADOS_CSV, mode='a', newline='', encoding='utf-8') as f:
-        writer = csv.writer(f)
-        writer.writerow([nome, cpf, placa, apartamento, vaga])
+        if not all([nome, cpf, placa, apartamento, vaga, motivo]):
+            flash("Todos os campos são obrigatórios.")
+            return redirect(url_for('index'))
 
-    # Mensagem de sucesso via renderização de página confirmacao.html
-    return render_template('confirmacao.html', mensagem="Cadastro atualizado com sucesso!", nome=COND_NOME, logo=COND_LOGO, cores=COND_CORES)
+        novo_registro = [nome, cpf, placa, apartamento, vaga, motivo]
 
+        novo_arquivo = not os.path.exists(CAMINHO_ARQUIVO)
+
+        with open(CAMINHO_ARQUIVO, mode='a', newline='', encoding='utf-8') as file:
+            writer = csv.writer(file)
+            if novo_arquivo:
+                writer.writerow(['Nome', 'CPF', 'Placa', 'Apartamento', 'Vaga', 'Motivo'])
+            writer.writerow(novo_registro)
+
+        return render_template('cadastro_sucesso.html', nome=nome)
 
 @app.route('/login')
 def login():
-    return render_template('login.html', erro=None, nome=COND_NOME, logo=COND_LOGO, cores=COND_CORES)
+    return render_template('login.html')
 
+@app.route('/login', methods=['POST'])
+def autenticar():
+    usuario = request.form['usuario']
+    senha = request.form['senha']
 
-@app.route('/login_usuario', methods=['POST'])
-def login_usuario():
-    usuario = request.form.get('usuario')
-    senha = request.form.get('senha')
-
-    # Validação simples
-    if usuario in USUARIOS and USUARIOS[usuario] == senha:
-        session['usuario'] = usuario
-        if usuario == 'sindico':
-            return redirect(url_for('dashboard_sindico'))
-        elif usuario == 'portaria':
-            return redirect(url_for('dashboard_portaria'))
+    if usuario == 'sindico' and senha == 'admin':
+        return redirect(url_for('dashboard_sindico'))
+    elif usuario == 'portaria' and senha == '1234':
+        return redirect(url_for('portaria'))
     else:
-        return render_template('login.html', erro="Usuário ou senha incorretos.", nome=COND_NOME, logo=COND_LOGO, cores=COND_CORES)
+        flash('Usuário ou senha incorretos.')
+        return redirect(url_for('login'))
 
-
-@app.route('/dashboard_sindico')
+@app.route('/sindico')
 def dashboard_sindico():
-    if 'usuario' not in session or session['usuario'] != 'sindico':
-        flash('Acesso negado. Faça login como síndico.')
-        return redirect(url_for('login'))
+    return render_template('dashboard-sindico.html')
 
-    return render_template('dashboard_sindico.html', nome=COND_NOME, logo=COND_LOGO, cores=COND_CORES)
-
-
-@app.route('/dashboard_portaria')
-def dashboard_portaria():
-    if 'usuario' not in session or session['usuario'] != 'portaria':
-        flash('Acesso negado. Faça login como portaria.')
-        return redirect(url_for('login'))
-
-    return render_template('dashboard_portaria.html', nome=COND_NOME, logo=COND_LOGO, cores=COND_CORES)
-
+@app.route('/portaria')
+def portaria():
+    return render_template('portaria.html')
 
 @app.route('/relatorios')
 def relatorios():
-    if 'usuario' not in session or session['usuario'] != 'sindico':
-        flash('Acesso negado. Faça login como síndico para ver os relatórios.')
-        return redirect(url_for('login'))
-
-    dados = []
-    with open(DADOS_CSV, mode='r', encoding='utf-8') as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            dados.append(row)
-
-    return render_template('relatorios.html', dados=dados, nome=COND_NOME, logo=COND_LOGO, cores=COND_CORES)
-
-
-@app.route('/logout')
-def logout():
-    session.pop('usuario', None)
-    flash('Logout realizado com sucesso.')
-    return redirect(url_for('login'))
-
+    registros = []
+    if os.path.exists(CAMINHO_ARQUIVO):
+        with open(CAMINHO_ARQUIVO, mode='r', encoding='utf-8') as file:
+            leitor = csv.reader(file)
+            cabecalho = next(leitor, None)
+            for linha in leitor:
+                registros.append(linha)
+    return render_template('relatorios.html', registros=registros)
 
 if __name__ == '__main__':
     app.run(debug=True)
