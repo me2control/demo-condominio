@@ -44,7 +44,7 @@ def autenticar():
         return redirect(url_for('dashboard_sindico'))
     elif usuario == 'portaria' and senha == 'portaria123':
         session['usuario'] = 'portaria'
-        return redirect(url_for('relatorios'))
+        return redirect(url_for('dashboard_portaria'))
     else:
         return render_template('login.html', erro='Usuário ou senha inválidos.')
 
@@ -62,7 +62,7 @@ def relatorios():
             with open(CSV_FILE, newline='', encoding='utf-8') as f:
                 reader = csv.reader(f)
                 registros = list(reader)
-        return render_template('dashboard_portaria.html', registros=registros)
+        return render_template('dashboard-portaria.html', registros=registros)
     return redirect(url_for('login'))
 
 @app.route('/logout')
